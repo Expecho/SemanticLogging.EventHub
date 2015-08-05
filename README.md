@@ -5,5 +5,5 @@ Run the SemanticLogging.EventHub.Processor console application for an example of
 
 ## How do I contribute?
 
-Please see [CONTRIBUTING.md](/CONTRIBUTING.md) for more details.
+Please see [CONTRIBUTE.md](/CONTRIBUTE.md) for more details.
 
