@@ -13,7 +13,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging
 
             for (int i = 0; i < payload.Count; i++)
             {
-                payloadDictionary.Add(schema.Payload[i], payload[i]);
+                payloadDictionary.Add(string.Format("Payload_{0}", schema.Payload[i]), payload[i]);
             }
 
             return payloadDictionary;
