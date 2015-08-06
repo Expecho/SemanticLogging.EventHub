@@ -14,14 +14,12 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.EventHub
         private EventHubClient eventHubClient;
         private string partitionKey;
         private readonly BufferedEventPublisher<EventEntry> bufferedPublisher;
-        private string instanceName;
         private TimeSpan onCompletedTimeout;
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventHubSink" /> class.
         /// </summary>
-        /// <param name="instanceName">The name of the instance originating the entries.</param>
         /// <param name="eventHubConnectionString">The connection string for the eventhub.</param>
         /// <param name="EventHubPath">The path of the eventhub.</param>
         /// <param name="bufferingInterval">The buffering interval between each batch publishing.</param>
@@ -33,15 +31,15 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.EventHub
         /// If <see langword="null"/> is specified, then the call will block indefinitely until the flush operation finishes.</param>
         /// <param name="partitionKey">PartitionKey is optional. If no partition key is supplied the log messages are sent to eventhub 
         /// and distributed to various partitions in a round robin manner.</param>
-        public EventHubSink(string instanceName, string eventHubConnectionString, string EventHubPath, TimeSpan bufferingInterval, int bufferingCount, int maxBufferSize, TimeSpan onCompletedTimeout, string partitionKey = null)
+        public EventHubSink(string eventHubConnectionString, string EventHubPath, TimeSpan bufferingInterval, int bufferingCount, int maxBufferSize, TimeSpan onCompletedTimeout, string partitionKey = null)
         {
             var factory = MessagingFactory.CreateFromConnectionString(eventHubConnectionString + ";TransportType=Amqp");
             eventHubClient = factory.CreateEventHubClient(EventHubPath);
+
             this.partitionKey = partitionKey;
             this.onCompletedTimeout = onCompletedTimeout;
-            this.instanceName = instanceName;
-
-            string sinkId = string.Format(CultureInfo.InvariantCulture, "EventHubSink ({0})", instanceName);
+            
+            string sinkId = string.Format(CultureInfo.InvariantCulture, "EventHubSink ({0})", Guid.NewGuid().ToString());
             bufferedPublisher = BufferedEventPublisher<EventEntry>.CreateAndStart(sinkId, PublishEventsAsync, bufferingInterval, bufferingCount, maxBufferSize, cancellationTokenSource.Token);
         }
 
@@ -112,7 +110,6 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.EventHub
                 foreach (var entry in collection)
                 {
                     var @event = entry.ToEventData();
-                    @event.Properties.Add("InstanceName", instanceName);
                     @event.PartitionKey = partitionKey;
                     events.Add(@event);
                 }

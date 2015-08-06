@@ -15,7 +15,6 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging
         /// Subscribes to an <see cref="IObservable{EventEntry}" /> using a <see cref="EventHubSink" />.
         /// </summary>
         /// <param name="eventStream">The event stream. Typically this is an instance of <see cref="ObservableEventListener" />.</param>
-        /// <param name="instanceName">The name of the instance originating the entries.</param>
         /// <param name="eventHubConnectionString">The connection string for the eventhub.</param>
         /// <param name="EventHubPath">The path of the eventhub.</param>
         /// <param name="bufferingInterval">The buffering interval between each batch publishing. Default value is <see cref="Buffering.DefaultBufferingInterval" />.</param>
@@ -30,10 +29,9 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging
         /// <returns>
         /// A subscription to the sink that can be disposed to unsubscribe the sink and dispose it, or to get access to the sink instance.
         /// </returns>
-        public static SinkSubscription<EventHubSink> LogToEventHub(this IObservable<EventEntry> eventStream, string instanceName, string eventHubConnectionString, string EventHubPath, TimeSpan? bufferingInterval = null, int bufferingCount = Buffering.DefaultBufferingCount, TimeSpan? onCompletedTimeout = null, int maxBufferSize = Buffering.DefaultMaxBufferSize, string partitionKey = null)
+        public static SinkSubscription<EventHubSink> LogToEventHub(this IObservable<EventEntry> eventStream, string eventHubConnectionString, string EventHubPath, TimeSpan? bufferingInterval = null, int bufferingCount = Buffering.DefaultBufferingCount, TimeSpan? onCompletedTimeout = null, int maxBufferSize = Buffering.DefaultMaxBufferSize, string partitionKey = null)
         {
             var sink = new EventHubSink(
-                instanceName,
                 eventHubConnectionString,
                 EventHubPath,
                 bufferingInterval ?? Buffering.DefaultBufferingInterval,
@@ -49,7 +47,6 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging
         /// <summary>
         /// Creates an event listener that logs using a <see cref="EventHubSink" />.
         /// </summary>
-        /// <param name="instanceName">The name of the instance originating the entries.</param>
         /// <param name="eventHubConnectionString">The connection string for the eventhub.</param>
         /// <param name="EventHubPath">The path of the eventhub.</param>
         /// <param name="bufferingInterval">The buffering interval between each batch publishing.</param>
@@ -64,10 +61,10 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging
         /// <returns>
         /// An event listener that uses <see cref="WindowsAzureTableSink" /> to log events.
         /// </returns>
-        public static EventListener CreateListener(string instanceName, string eventHubConnectionString, string EventHubPath, TimeSpan? bufferingInterval = null, int bufferingCount = Buffering.DefaultBufferingCount, TimeSpan? listenerDisposeTimeout = null, int maxBufferSize = Buffering.DefaultMaxBufferSize, string partitionKey = null)
+        public static EventListener CreateListener(string eventHubConnectionString, string EventHubPath, TimeSpan? bufferingInterval = null, int bufferingCount = Buffering.DefaultBufferingCount, TimeSpan? listenerDisposeTimeout = null, int maxBufferSize = Buffering.DefaultMaxBufferSize, string partitionKey = null)
         {
             var listener = new ObservableEventListener();
-            listener.LogToEventHub(instanceName, eventHubConnectionString, EventHubPath, bufferingInterval, bufferingCount, listenerDisposeTimeout, maxBufferSize, partitionKey);
+            listener.LogToEventHub(eventHubConnectionString, EventHubPath, bufferingInterval, bufferingCount, listenerDisposeTimeout, maxBufferSize, partitionKey);
             return listener;
         }
     }
