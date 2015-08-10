@@ -18,9 +18,11 @@ namespace SemanticLogging.EventHub.SampleProcessor
             {
                 return;
             }
+
             var eventDataList = events as IList<EventData> ?? events.ToList();
 
-
+            // Insert logic here
+            
             await context.CheckpointAsync();
         }
 

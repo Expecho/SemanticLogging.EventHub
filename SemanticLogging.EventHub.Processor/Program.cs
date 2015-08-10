@@ -13,7 +13,7 @@ namespace SemanticLogging.EventHub.SampleProcessor
 
         public static async Task ProcessAsync()
         {
-            var eventHubConnectionString = "eventhub connection string>";
+            const string eventHubConnectionString = "<eventhub connection string>";
             var eventHubClient = EventHubClient.CreateFromConnectionString(eventHubConnectionString, "<eventhub name>");
 
             var eventProcessorHost = new EventProcessorHost(Environment.MachineName,
@@ -24,9 +24,9 @@ namespace SemanticLogging.EventHub.SampleProcessor
             {
                 PartitionManagerOptions = new PartitionManagerOptions
                 {
-                    AcquireInterval = TimeSpan.FromSeconds(10), // Default is 10 seconds 
-                    RenewInterval = TimeSpan.FromSeconds(10),   // Default is 10 seconds 
-                    LeaseInterval = TimeSpan.FromSeconds(30)    // Default value is 30 seconds 
+                    AcquireInterval = TimeSpan.FromSeconds(10), 
+                    RenewInterval = TimeSpan.FromSeconds(10),   
+                    LeaseInterval = TimeSpan.FromSeconds(30)
                 }
             };
 

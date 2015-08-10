@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Schema;
 using Microsoft.ServiceBus.Messaging;
 
-namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging
+namespace EnterpriseLibrary.SemanticLogging.EventHub.Utility
 {
     public static class EventEntryExtensions
     {

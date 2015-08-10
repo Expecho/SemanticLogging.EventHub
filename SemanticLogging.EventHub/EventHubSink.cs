@@ -3,25 +3,27 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using EnterpriseLibrary.SemanticLogging.EventHub.Utility;
+using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility;
 using Microsoft.ServiceBus.Messaging;
 
-namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.EventHub
+namespace EnterpriseLibrary.SemanticLogging.EventHub
 {
     public class EventHubSink : IObserver<EventEntry>, IDisposable
     {
-        private EventHubClient eventHubClient;
-        private string partitionKey;
+        private readonly EventHubClient eventHubClient;
+        private readonly string partitionKey;
         private readonly BufferedEventPublisher<EventEntry> bufferedPublisher;
-        private TimeSpan onCompletedTimeout;
-        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private readonly TimeSpan onCompletedTimeout;
+        private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventHubSink" /> class.
         /// </summary>
         /// <param name="eventHubConnectionString">The connection string for the eventhub.</param>
-        /// <param name="EventHubPath">The path of the eventhub.</param>
+        /// <param name="eventHubPath">The path of the eventhub.</param>
         /// <param name="bufferingInterval">The buffering interval between each batch publishing.</param>
         /// <param name="bufferingCount">The number of entries that will trigger a batch publishing.</param>
         /// <param name="maxBufferSize">The maximum number of entries that can be buffered while it's sending to the store before the sink starts dropping entries.</param>      
@@ -31,10 +33,10 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.EventHub
         /// If <see langword="null"/> is specified, then the call will block indefinitely until the flush operation finishes.</param>
         /// <param name="partitionKey">PartitionKey is optional. If no partition key is supplied the log messages are sent to eventhub 
         /// and distributed to various partitions in a round robin manner.</param>
-        public EventHubSink(string eventHubConnectionString, string EventHubPath, TimeSpan bufferingInterval, int bufferingCount, int maxBufferSize, TimeSpan onCompletedTimeout, string partitionKey = null)
+        public EventHubSink(string eventHubConnectionString, string eventHubPath, TimeSpan bufferingInterval, int bufferingCount, int maxBufferSize, TimeSpan onCompletedTimeout, string partitionKey = null)
         {
             var factory = MessagingFactory.CreateFromConnectionString(eventHubConnectionString + ";TransportType=Amqp");
-            eventHubClient = factory.CreateEventHubClient(EventHubPath);
+            eventHubClient = factory.CreateEventHubClient(eventHubPath);
 
             this.partitionKey = partitionKey;
             this.onCompletedTimeout = onCompletedTimeout;

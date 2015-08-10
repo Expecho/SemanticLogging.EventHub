@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics.Tracing;
 using System.Threading;
-using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.EventHub;
+using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility;
 
-namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging
+namespace EnterpriseLibrary.SemanticLogging.EventHub
 {
     /// <summary>
     /// Factories and helpers for using the <see cref="EventHubSink"/>.
