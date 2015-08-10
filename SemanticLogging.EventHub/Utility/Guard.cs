@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved. 
+using System;
 
 namespace EnterpriseLibrary.SemanticLogging.EventHub.Utility
 {
