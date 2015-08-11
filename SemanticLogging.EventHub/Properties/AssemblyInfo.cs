@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SemanticLogging.EventHub")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Enterprise Library Semantic Logging Sink to push events to an Azure Event Hub")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("De Heer Software")]
 [assembly: AssemblyProduct("SemanticLogging.EventHub")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
