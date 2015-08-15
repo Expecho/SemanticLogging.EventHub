@@ -8,9 +8,9 @@ using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility;
 
 namespace EnterpriseLibrary.SemanticLogging.EventHub.Configuration
 {
-    internal class EventHubSinkElement : ISinkElement
+    internal class EventHubAmpqSinkElement : ISinkElement
     {
-        private readonly XName sinkName = XName.Get("eventHubSink", Constants.Namespace);
+        private readonly XName sinkName = XName.Get("eventHubAmpqSink", Constants.Namespace);
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Validated with Guard class")]
         public bool CanCreateSink(XElement element)
@@ -26,9 +26,9 @@ namespace EnterpriseLibrary.SemanticLogging.EventHub.Configuration
             Guard.ArgumentNotNull(element, "element");
 
             var subject = new EventEntrySubject();
-            subject.LogToEventHub(
+            subject.LogToEventHubUsingAmpq(
                 (string)element.Attribute("eventHubConnectionString"),
-                (string)element.Attribute("eventHubPath"),
+                (string)element.Attribute("eventHubName"),
                 element.Attribute("bufferingIntervalInSeconds").ToTimeSpan(),
                 (int?)element.Attribute("bufferingCount") ?? Buffering.DefaultBufferingCount,
                 element.Attribute("bufferingFlushAllTimeoutInSeconds").ToTimeSpan() ?? Constants.DefaultBufferingFlushAllTimeout,

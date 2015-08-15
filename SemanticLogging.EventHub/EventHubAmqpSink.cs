@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using EnterpriseLibrary.SemanticLogging.EventHub.Utility;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility;
@@ -13,7 +14,7 @@ using Newtonsoft.Json;
 
 namespace EnterpriseLibrary.SemanticLogging.EventHub
 {
-    public class EventHubSink : IObserver<EventEntry>, IDisposable
+    public class EventHubAmqpSink : IObserver<EventEntry>, IDisposable
     {
         private readonly EventHubClient eventHubClient;
         private readonly string partitionKey;
@@ -22,10 +23,10 @@ namespace EnterpriseLibrary.SemanticLogging.EventHub
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EventHubSink" /> class.
+        /// Initializes a new instance of the <see cref="EventHubAmqpSink" /> class.
         /// </summary>
         /// <param name="eventHubConnectionString">The connection string for the eventhub.</param>
-        /// <param name="eventHubPath">The path of the eventhub.</param>
+        /// <param name="eventHubName">The name of the eventhub.</param>
         /// <param name="bufferingInterval">The buffering interval between each batch publishing.</param>
         /// <param name="bufferingCount">The number of entries that will trigger a batch publishing.</param>
         /// <param name="maxBufferSize">The maximum number of entries that can be buffered while it's sending to the store before the sink starts dropping entries.</param>      
@@ -35,10 +36,13 @@ namespace EnterpriseLibrary.SemanticLogging.EventHub
         /// If <see langword="null"/> is specified, then the call will block indefinitely until the flush operation finishes.</param>
         /// <param name="partitionKey">PartitionKey is optional. If no partition key is supplied the log messages are sent to eventhub 
         /// and distributed to various partitions in a round robin manner.</param>
-        public EventHubSink(string eventHubConnectionString, string eventHubPath, TimeSpan bufferingInterval, int bufferingCount, int maxBufferSize, TimeSpan onCompletedTimeout, string partitionKey = null)
+        public EventHubAmqpSink(string eventHubConnectionString, string eventHubName, TimeSpan bufferingInterval, int bufferingCount, int maxBufferSize, TimeSpan onCompletedTimeout, string partitionKey = null)
         {
+            Guard.ArgumentNotNullOrEmpty(eventHubConnectionString, "eventHubConnectionString");
+            Guard.ArgumentNotNullOrEmpty(eventHubName, "eventHubName");
+
             var factory = MessagingFactory.CreateFromConnectionString(eventHubConnectionString + ";TransportType=Amqp");
-            eventHubClient = factory.CreateEventHubClient(eventHubPath);
+            eventHubClient = factory.CreateEventHubClient(eventHubName);
 
             this.partitionKey = partitionKey;
             this.onCompletedTimeout = onCompletedTimeout;
@@ -79,9 +83,9 @@ namespace EnterpriseLibrary.SemanticLogging.EventHub
         }
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="EventHubSink"/> class.
+        /// Finalizes an instance of the <see cref="EventHubAmqpSink"/> class.
         /// </summary>
-        ~EventHubSink()
+        ~EventHubAmqpSink()
         {
             Dispose(false);
         }
@@ -96,7 +100,7 @@ namespace EnterpriseLibrary.SemanticLogging.EventHub
         }
 
         /// <summary>
-        /// Releases all resources used by the current instance of the <see cref="EventHubSink"/> class.
+        /// Releases all resources used by the current instance of the <see cref="EventHubAmqpSink"/> class.
         /// </summary>
         public void Dispose()
         {

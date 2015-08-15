@@ -7,19 +7,20 @@ using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility;
 namespace EnterpriseLibrary.SemanticLogging.EventHub
 {
     /// <summary>
-    /// Factories and helpers for using the <see cref="EventHubSink"/>.
+    /// Factories and helpers for using the <see cref="EventHubAmqpSink"/>.
     /// </summary>
-    public static class EventHubLog
+    public static class EventHubAmpqLog
     {
         /// <summary>
-        /// Subscribes to an <see cref="IObservable{EventEntry}" /> using a <see cref="EventHubSink" />.
+        /// Subscribes to an <see cref="IObservable{EventEntry}" /> using a <see cref="EventHubAmqpSink" />.
         /// </summary>
         /// <param name="eventStream">The event stream. Typically this is an instance of <see cref="ObservableEventListener" />.</param>
         /// <param name="eventHubConnectionString">The connection string for the eventhub.</param>
-        /// <param name="eventHubPath">The path of the eventhub.</param>
+        /// <param name="eventHubPath">The name of the eventhub.</param>
+        /// <param name="eventHubName"></param>
         /// <param name="bufferingInterval">The buffering interval between each batch publishing. Default value is <see cref="Buffering.DefaultBufferingInterval" />.</param>
         /// <param name="bufferingCount">The number of entries that will trigger a batch publishing.</param>
-        /// <param name="onCompletedTimeout">Defines a timeout interval for when flushing the entries after an <see cref="EventHubSink.OnCompleted" /> call is received and before disposing the sink.</param>
+        /// <param name="onCompletedTimeout">Defines a timeout interval for when flushing the entries after an <see cref="EventHubAmqpSink.OnCompleted" /> call is received and before disposing the sink.</param>
         /// <param name="maxBufferSize">The maximum number of entries that can be buffered while it's sending to Azure EventHub before the sink starts dropping entries.
         /// This means that if the timeout period elapses, some event entries will be dropped and not sent to the store. Normally, calling <see cref="IDisposable.Dispose" /> on
         /// the <see cref="System.Diagnostics.Tracing.EventListener" /> will block until all the entries are flushed or the interval elapses.
@@ -29,11 +30,11 @@ namespace EnterpriseLibrary.SemanticLogging.EventHub
         /// <returns>
         /// A subscription to the sink that can be disposed to unsubscribe the sink and dispose it, or to get access to the sink instance.
         /// </returns>
-        public static SinkSubscription<EventHubSink> LogToEventHub(this IObservable<EventEntry> eventStream, string eventHubConnectionString, string eventHubPath, TimeSpan? bufferingInterval = null, int bufferingCount = Buffering.DefaultBufferingCount, TimeSpan? onCompletedTimeout = null, int maxBufferSize = Buffering.DefaultMaxBufferSize, string partitionKey = null)
+        public static SinkSubscription<EventHubAmqpSink> LogToEventHubUsingAmpq(this IObservable<EventEntry> eventStream, string eventHubConnectionString, string eventHubName, TimeSpan? bufferingInterval = null, int bufferingCount = Buffering.DefaultBufferingCount, TimeSpan? onCompletedTimeout = null, int maxBufferSize = Buffering.DefaultMaxBufferSize, string partitionKey = null)
         {
-            var sink = new EventHubSink(
+            var sink = new EventHubAmqpSink(
                 eventHubConnectionString,
-                eventHubPath,
+                eventHubName,
                 bufferingInterval ?? Buffering.DefaultBufferingInterval,
                 bufferingCount,
                 maxBufferSize,
@@ -41,14 +42,14 @@ namespace EnterpriseLibrary.SemanticLogging.EventHub
                 partitionKey);
 
             var subscription = eventStream.Subscribe(sink);
-            return new SinkSubscription<EventHubSink>(subscription, sink);
+            return new SinkSubscription<EventHubAmqpSink>(subscription, sink);
         }
 
         /// <summary>
-        /// Creates an event listener that logs using a <see cref="EventHubSink" />.
+        /// Creates an event listener that logs using a <see cref="EventHubAmqpSink" />.
         /// </summary>
         /// <param name="eventHubConnectionString">The connection string for the eventhub.</param>
-        /// <param name="eventHubPath">The path of the eventhub.</param>
+        /// <param name="eventHubName">The name of the eventhub.</param>
         /// <param name="bufferingInterval">The buffering interval between each batch publishing.</param>
         /// <param name="bufferingCount">The number of entries that will trigger a batch publishing.</param>
         /// <param name="listenerDisposeTimeout">Defines a timeout interval for the flush operation when the listener is disposed.</param>
@@ -59,12 +60,12 @@ namespace EnterpriseLibrary.SemanticLogging.EventHub
         /// <param name="partitionKey">PartitionKey is optional. If no partition key is supplied the log messages are sent to eventhub 
         /// and distributed to various partitions in a round robin manner.</param>
         /// <returns>
-        /// An event listener that uses <see cref="EventHubSink" /> to log events.
+        /// An event listener that uses <see cref="EventHubAmqpSink" /> to log events.
         /// </returns>
-        public static EventListener CreateListener(string eventHubConnectionString, string eventHubPath, TimeSpan? bufferingInterval = null, int bufferingCount = Buffering.DefaultBufferingCount, TimeSpan? listenerDisposeTimeout = null, int maxBufferSize = Buffering.DefaultMaxBufferSize, string partitionKey = null)
+        public static EventListener CreateListener(string eventHubConnectionString, string eventHubName, TimeSpan? bufferingInterval = null, int bufferingCount = Buffering.DefaultBufferingCount, TimeSpan? listenerDisposeTimeout = null, int maxBufferSize = Buffering.DefaultMaxBufferSize, string partitionKey = null)
         {
             var listener = new ObservableEventListener();
-            listener.LogToEventHub(eventHubConnectionString, eventHubPath, bufferingInterval, bufferingCount, listenerDisposeTimeout, maxBufferSize, partitionKey);
+            listener.LogToEventHubUsingAmpq(eventHubConnectionString, eventHubName, bufferingInterval, bufferingCount, listenerDisposeTimeout, maxBufferSize, partitionKey);
             return listener;
         }
     }
