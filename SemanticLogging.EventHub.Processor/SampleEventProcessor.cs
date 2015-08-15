@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.ServiceBus.Messaging;
+using Newtonsoft.Json;
 
 namespace SemanticLogging.EventHub.SampleProcessor
 {
@@ -19,9 +22,10 @@ namespace SemanticLogging.EventHub.SampleProcessor
                 return;
             }
 
-            var eventDataList = events as IList<EventData> ?? events.ToList();
-
-            // Insert logic here
+            foreach (var eventData in events)
+            {
+                dynamic data = JsonConvert.DeserializeObject(Encoding.Default.GetString(eventData.GetBytes()));
+            }
             
             await context.CheckpointAsync();
         }
@@ -32,6 +36,25 @@ namespace SemanticLogging.EventHub.SampleProcessor
             {
                 await context.CheckpointAsync();
             }
+        }
+    }
+
+    public class EventDataConverter
+    {
+        public static EventEntry ToEventEntry(dynamic eventData)
+        {
+            return new EventEntry
+            (
+                (Guid)eventData.sourceId,
+                eventData.eventId,
+                eventData.formattedMessage,
+                null,
+                eventData.timestamp,
+                eventData.activityId,
+                eventData.relatedactivityId,
+                null
+
+            );
         }
     }
 }

@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using EnterpriseLibrary.SemanticLogging.EventHub.Utility;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility;
 using Microsoft.ServiceBus.Messaging;
+using Newtonsoft.Json;
 
 namespace EnterpriseLibrary.SemanticLogging.EventHub
 {
@@ -104,21 +106,19 @@ namespace EnterpriseLibrary.SemanticLogging.EventHub
 
         private async Task<int> PublishEventsAsync(IList<EventEntry> collection)
         {
-            int publishedEvents = collection.Count;
+            var publishedEventCount = collection.Count;
 
             try
             {
-                var events = new List<EventData>();
-                foreach (var entry in collection)
+                var events = collection.Select(entry => 
+                    new EventData(Encoding.Default.GetBytes(JsonConvert.SerializeObject(entry)))
                 {
-                    var @event = entry.ToEventData();
-                    @event.PartitionKey = partitionKey;
-                    events.Add(@event);
-                }
+                    PartitionKey = partitionKey
+                });
 
                 await eventHubClient.SendBatchAsync(events);
 
-                return publishedEvents;
+                return publishedEventCount;
             }
             catch (OperationCanceledException)
             {
