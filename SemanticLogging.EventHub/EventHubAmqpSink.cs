@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using EnterpriseLibrary.SemanticLogging.EventHub.Utility;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility;
 using Microsoft.ServiceBus.Messaging;
 using Newtonsoft.Json;
+using SemanticLogging.EventHub.Utility;
 
-namespace EnterpriseLibrary.SemanticLogging.EventHub
+namespace SemanticLogging.EventHub
 {
     public class EventHubAmqpSink : IObserver<EventEntry>, IDisposable
     {

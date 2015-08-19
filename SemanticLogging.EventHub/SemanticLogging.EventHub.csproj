@@ -7,8 +7,8 @@
     <ProjectGuid>{DC78157F-644D-4F9B-AD6F-2CC4158F03D6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EnterpriseLibrary.SemanticLogging.EventHub</RootNamespace>
-    <AssemblyName>EnterpriseLibrary.SemanticLogging.EventHub</AssemblyName>
+    <RootNamespace>SemanticLogging.EventHub</RootNamespace>
+    <AssemblyName>SemanticLogging.EventHub</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EnterpriseLibrary.SemanticLogging.EventHub.Properties {
+namespace SemanticLogging.EventHub.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace EnterpriseLibrary.SemanticLogging.EventHub.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EnterpriseLibrary.SemanticLogging.EventHub.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SemanticLogging.EventHub.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

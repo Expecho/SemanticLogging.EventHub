@@ -4,7 +4,7 @@ using System.Threading;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility;
 
-namespace EnterpriseLibrary.SemanticLogging.EventHub
+namespace SemanticLogging.EventHub
 {
     /// <summary>
     /// Factories and helpers for using the <see cref="EventHubAmqpSink"/>.

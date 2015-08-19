@@ -1,11 +1,11 @@
 using System;
 using System.Net.Http;
 using System.Text;
-using EnterpriseLibrary.SemanticLogging.EventHub.Utility;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Newtonsoft.Json;
+using SemanticLogging.EventHub.Utility;
 
-namespace EnterpriseLibrary.SemanticLogging.EventHub
+namespace SemanticLogging.EventHub
 {
     public class EventHubHttpSink : IObserver<EventEntry>
     {
@@ -55,9 +55,7 @@ namespace EnterpriseLibrary.SemanticLogging.EventHub
                     SemanticLoggingEventSource.Log.CustomSinkUnhandledFault(ex.ToString());
                     throw;
                 }
-
             }
-
         }
 
         public void OnError(Exception error)

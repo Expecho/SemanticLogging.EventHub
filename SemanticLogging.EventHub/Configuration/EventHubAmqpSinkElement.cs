@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Xml.Linq;
-using EnterpriseLibrary.SemanticLogging.EventHub.Utility;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Configuration;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility;
+using SemanticLogging.EventHub.Utility;
 
-namespace EnterpriseLibrary.SemanticLogging.EventHub.Configuration
+namespace SemanticLogging.EventHub.Configuration
 {
     internal class EventHubAmqpSinkElement : ISinkElement
     {

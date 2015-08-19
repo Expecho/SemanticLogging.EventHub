@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 
-namespace EnterpriseLibrary.SemanticLogging.EventHub.Utility
+namespace SemanticLogging.EventHub.Utility
 {
     /// <summary>
     /// A subject that can be observed and publish events.

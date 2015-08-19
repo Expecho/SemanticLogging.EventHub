@@ -2,7 +2,7 @@
 using System.Diagnostics.Tracing;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 
-namespace EnterpriseLibrary.SemanticLogging.EventHub
+namespace SemanticLogging.EventHub
 {
     public static class EventHubHttpLog
     {

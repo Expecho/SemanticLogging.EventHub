@@ -6,7 +6,7 @@ using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Schema;
 using Microsoft.ServiceBus.Messaging;
 
-namespace EnterpriseLibrary.SemanticLogging.EventHub.Utility
+namespace SemanticLogging.EventHub.Utility
 {
     public static class EventEntryExtensions
     {
