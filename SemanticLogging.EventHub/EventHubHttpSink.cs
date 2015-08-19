@@ -48,7 +48,10 @@ namespace SemanticLogging.EventHub
 
                 try
                 {
-                    await httpClient.PostAsync(url, content);
+                    var response = await httpClient.PostAsync(url, content);
+                    if(!response.IsSuccessStatusCode)
+                        SemanticLoggingEventSource.Log.CustomSinkUnhandledFault(string.Format("The request failed with statuscode {0}: {1}", (int)response.StatusCode, response.ReasonPhrase));
+
                 }
                 catch (Exception ex)
                 {
