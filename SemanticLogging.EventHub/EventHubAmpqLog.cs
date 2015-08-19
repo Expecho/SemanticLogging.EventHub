@@ -30,7 +30,7 @@ namespace EnterpriseLibrary.SemanticLogging.EventHub
         /// <returns>
         /// A subscription to the sink that can be disposed to unsubscribe the sink and dispose it, or to get access to the sink instance.
         /// </returns>
-        public static SinkSubscription<EventHubAmqpSink> LogToEventHubUsingAmpq(this IObservable<EventEntry> eventStream, string eventHubConnectionString, string eventHubName, TimeSpan? bufferingInterval = null, int bufferingCount = Buffering.DefaultBufferingCount, TimeSpan? onCompletedTimeout = null, int maxBufferSize = Buffering.DefaultMaxBufferSize, string partitionKey = null)
+        public static SinkSubscription<EventHubAmqpSink> LogToEventHubUsingAmqp(this IObservable<EventEntry> eventStream, string eventHubConnectionString, string eventHubName, TimeSpan? bufferingInterval = null, int bufferingCount = Buffering.DefaultBufferingCount, TimeSpan? onCompletedTimeout = null, int maxBufferSize = Buffering.DefaultMaxBufferSize, string partitionKey = null)
         {
             var sink = new EventHubAmqpSink(
                 eventHubConnectionString,
@@ -65,7 +65,7 @@ namespace EnterpriseLibrary.SemanticLogging.EventHub
         public static EventListener CreateListener(string eventHubConnectionString, string eventHubName, TimeSpan? bufferingInterval = null, int bufferingCount = Buffering.DefaultBufferingCount, TimeSpan? listenerDisposeTimeout = null, int maxBufferSize = Buffering.DefaultMaxBufferSize, string partitionKey = null)
         {
             var listener = new ObservableEventListener();
-            listener.LogToEventHubUsingAmpq(eventHubConnectionString, eventHubName, bufferingInterval, bufferingCount, listenerDisposeTimeout, maxBufferSize, partitionKey);
+            listener.LogToEventHubUsingAmqp(eventHubConnectionString, eventHubName, bufferingInterval, bufferingCount, listenerDisposeTimeout, maxBufferSize, partitionKey);
             return listener;
         }
     }

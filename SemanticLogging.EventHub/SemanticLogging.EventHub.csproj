@@ -58,7 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\EventHubAmpqSinkElement.cs" />
+    <Compile Include="Configuration\EventHubAmqpSinkElement.cs" />
     <Compile Include="Configuration\EventHubHttpSinkElement.cs" />
     <Compile Include="EventHubAmpqLog.cs" />
     <Compile Include="EventHubHttpLog.cs" />

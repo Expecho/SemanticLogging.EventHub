@@ -41,7 +41,7 @@ namespace EnterpriseLibrary.SemanticLogging.EventHub
             Guard.ArgumentNotNullOrEmpty(eventHubConnectionString, "eventHubConnectionString");
             Guard.ArgumentNotNullOrEmpty(eventHubName, "eventHubName");
 
-            var factory = MessagingFactory.CreateFromConnectionString(eventHubConnectionString + ";TransportType=Amqp");
+            var factory = MessagingFactory.CreateFromConnectionString(string.Format("{0};TransportType={1}", eventHubConnectionString, TransportType.Amqp));
             eventHubClient = factory.CreateEventHubClient(eventHubName);
 
             this.partitionKey = partitionKey;
