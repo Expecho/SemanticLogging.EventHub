@@ -1,17 +1,17 @@
 ## SemanticLogging.EventHub
-SemanticLogging.EventHub is a sink for the Semantic Logging Application Block that exposes Event Source events to an Azure Event Hub.
+The SemanticLogging.EventHub project provides sinks for the Semantic Logging Application Block that exposes Event Source events to an Azure Event Hub. There is an HTTPS based sink and an AMQP based sink.
 
-This sink is also available as a Nuget package: https://www.nuget.org/packages/SemanticLogging.EventHub/
+This sinks are also available as a Nuget package: https://www.nuget.org/packages/SemanticLogging.EventHub/
 
 Run the SemanticLogging.EventHub.Processor console application for an example of how to process the events.
 
-## Usage
+## AMQP based sink Usage
 
-Minimal setup:
+Minimal setup for the AMQP based sink:
 ```
 var listener = new ObservableEventListener();
 
-listener.LogToEventHub(
+listener.LogToEventHubUsingAmqp(
     "<Connection string to eventhub>",
     "<Eventhub name>"
   );
@@ -19,7 +19,25 @@ listener.LogToEventHub(
 listener.EnableEvents(MyEventSource.Log, EventLevel.LogAlways);
 ```
 
-The event data is send as a key/value pair collection.
+a partition key can optionally be provided using the partitionKey parameter. If no partition key is supplied the data is sent to the eventhub and distributed to various partitions in a round robin manner. 
+
+## HTTPS based sink Usage
+
+Minimal setup for the HTTPS based sink:
+```
+var listener = new ObservableEventListener();
+
+listener.LogToEventHubUsingHttp(
+    "<Eventhub namespace>",
+    "<Eventhub name>",
+    "<Publisher id>"
+    "<sas token>"
+  );
+  
+listener.EnableEvents(MyEventSource.Log, EventLevel.LogAlways);
+```
+
+a partition key can optionally be provided using the partitionKey parameter. If no partition key is supplied the data is sent to the eventhub and distributed to various partitions in a round robin manner. 
 
 ## Consuming events
 
