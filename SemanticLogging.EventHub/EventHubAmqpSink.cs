@@ -47,7 +47,7 @@ namespace SemanticLogging.EventHub
             this.partitionKey = partitionKey;
             this.onCompletedTimeout = onCompletedTimeout;
             
-            string sinkId = string.Format(CultureInfo.InvariantCulture, "EventHubSink ({0})", Guid.NewGuid());
+            string sinkId = string.Format(CultureInfo.InvariantCulture, "EventHubAmqpSink ({0})", Guid.NewGuid());
             bufferedPublisher = BufferedEventPublisher<EventEntry>.CreateAndStart(sinkId, PublishEventsAsync, bufferingInterval, bufferingCount, maxBufferSize, cancellationTokenSource.Token);
         }
 

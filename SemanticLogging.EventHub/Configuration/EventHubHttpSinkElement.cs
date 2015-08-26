@@ -2,6 +2,7 @@
 using System.Xml.Linq;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Configuration;
+using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility;
 using SemanticLogging.EventHub.Utility;
 
 namespace SemanticLogging.EventHub.Configuration
@@ -28,7 +29,11 @@ namespace SemanticLogging.EventHub.Configuration
                 (string)element.Attribute("eventHubNamespace"),
                 (string)element.Attribute("eventHubName"),
                 (string)element.Attribute("partitionKey"),
-                (string)element.Attribute("sasToken")
+                (string)element.Attribute("sasToken"),
+                element.Attribute("bufferingIntervalInSeconds").ToTimeSpan(),
+                (int?)element.Attribute("bufferingCount") ?? Buffering.DefaultBufferingCount,
+                element.Attribute("bufferingFlushAllTimeoutInSeconds").ToTimeSpan() ?? Constants.DefaultBufferingFlushAllTimeout,
+                (int?)element.Attribute("maxBufferSize") ?? Buffering.DefaultMaxBufferSize
                 );
 
             return subject;
