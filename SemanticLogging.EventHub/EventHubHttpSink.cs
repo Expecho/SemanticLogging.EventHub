@@ -21,7 +21,6 @@ namespace SemanticLogging.EventHub
         private readonly string eventHubNamespace;
         private readonly string eventHubName;
         private readonly string publisherId;
-        private readonly string sasToken;
         private readonly HttpClient httpClient = new HttpClient();
         private readonly BufferedEventPublisher<EventEntry> bufferedPublisher;
         private readonly TimeSpan onCompletedTimeout;
@@ -51,7 +50,6 @@ namespace SemanticLogging.EventHub
             this.eventHubNamespace = eventHubNamespace;
             this.eventHubName = eventHubName;
             this.publisherId = publisherId;
-            this.sasToken = sasToken;
             this.onCompletedTimeout = onCompletedTimeout;
 
             string sinkId = string.Format(CultureInfo.InvariantCulture, "EventHubHttpSink ({0})", Guid.NewGuid());
