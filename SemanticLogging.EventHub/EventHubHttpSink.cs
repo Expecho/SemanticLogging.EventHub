@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility;
+using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
 using Newtonsoft.Json;
 using SemanticLogging.EventHub.Utility;
 
@@ -82,18 +83,13 @@ namespace SemanticLogging.EventHub
 
             try
             {
-                HttpContent content;
+                var content = collection.Count == 1 ? 
+                    CreateSingleMessageContent(collection.First()) : 
+                    CreateBatchMessageContent(collection);
 
-                if(collection.Count == 1)
-                {
-                    content = CreateSingleMessageContent(collection.First());
-                }
-                else
-                {
-                    content = CreateBatchMessageContent(collection);
-                }
-
-                await PostMessageContentAsync(content);
+                var retryStrategy = new Incremental(5, TimeSpan.FromSeconds(0.5), TimeSpan.FromSeconds(1));
+                var retryPolicy = new RetryPolicy<HttpTransientErrorDetectionStrategy>(retryStrategy);
+                await retryPolicy.ExecuteAsync(() => PostMessageContentAsync(content));                
 
                 return publishedEventCount;
             }
