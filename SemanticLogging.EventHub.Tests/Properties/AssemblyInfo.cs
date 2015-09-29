@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SemanticLogging.EventHub")]
-[assembly: AssemblyDescription("Enterprise Library Semantic Logging Sink to push events to an Azure Event Hub")]
+[assembly: AssemblyTitle("SemanticLogging.EventHub.Tests")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("De Heer Software")]
-[assembly: AssemblyProduct("SemanticLogging.EventHub")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("SemanticLogging.EventHub.Tests")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,9 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("dc78157f-644d-4f9b-ad6f-2cc4158f03d6")]
-
-[assembly: InternalsVisibleTo("SemanticLogging.EventHub.Tests")]
+[assembly: Guid("49db6b56-60a7-474d-bc25-75593259edb3")]
 
 // Version information for an assembly consists of the following four values:
 //

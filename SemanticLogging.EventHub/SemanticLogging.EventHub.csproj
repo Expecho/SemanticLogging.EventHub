@@ -65,8 +65,10 @@
     <Compile Include="Configuration\EventHubAmqpSinkElement.cs" />
     <Compile Include="Configuration\EventHubHttpSinkElement.cs" />
     <Compile Include="EventHubAmpqLog.cs" />
+    <Compile Include="EventHubClientImp.cs" />
     <Compile Include="EventHubHttpLog.cs" />
     <Compile Include="EventHubHttpSink.cs" />
+    <Compile Include="IEventHubClient.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

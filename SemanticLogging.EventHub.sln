@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemanticLogging.EventHub", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemanticLogging.EventHub.SampleProcessor", "SemanticLogging.EventHub.Processor\SemanticLogging.EventHub.SampleProcessor.csproj", "{5E946277-D193-40E3-87E6-BE49EDB50359}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemanticLogging.EventHub.Tests", "SemanticLogging.EventHub.Tests\SemanticLogging.EventHub.Tests.csproj", "{49DB6B56-60A7-474D-BC25-75593259EDB3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{5E946277-D193-40E3-87E6-BE49EDB50359}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E946277-D193-40E3-87E6-BE49EDB50359}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E946277-D193-40E3-87E6-BE49EDB50359}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49DB6B56-60A7-474D-BC25-75593259EDB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49DB6B56-60A7-474D-BC25-75593259EDB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49DB6B56-60A7-474D-BC25-75593259EDB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49DB6B56-60A7-474D-BC25-75593259EDB3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

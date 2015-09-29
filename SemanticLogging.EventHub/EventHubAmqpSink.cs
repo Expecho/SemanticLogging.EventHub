@@ -16,10 +16,10 @@ namespace SemanticLogging.EventHub
 {
     public class EventHubAmqpSink : IObserver<EventEntry>, IDisposable
     {
-        private readonly EventHubClient eventHubClient;
-        private readonly string partitionKey;
-        private readonly BufferedEventPublisher<EventEntry> bufferedPublisher;
-        private readonly TimeSpan onCompletedTimeout;
+        private readonly IEventHubClient eventHubClient;
+        private string partitionKey;
+        private BufferedEventPublisher<EventEntry> bufferedPublisher;
+        private TimeSpan onCompletedTimeout;
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
         /// <summary>
@@ -42,13 +42,26 @@ namespace SemanticLogging.EventHub
             Guard.ArgumentNotNullOrEmpty(eventHubName, "eventHubName");
 
             var factory = MessagingFactory.CreateFromConnectionString(string.Format("{0};TransportType={1}", eventHubConnectionString, TransportType.Amqp));
-            eventHubClient = factory.CreateEventHubClient(eventHubName);
+            eventHubClient = new EventHubClientImp(factory.CreateEventHubClient(eventHubName));
 
+            SetupSink(bufferingInterval, bufferingCount, maxBufferSize, onCompletedTimeout, partitionKey);
+        }
+
+        internal EventHubAmqpSink(IEventHubClient eventHubClient, TimeSpan bufferingInterval, int bufferingCount, int maxBufferSize, TimeSpan onCompletedTimeout, string partitionKey = null)
+        {
+            this.eventHubClient = eventHubClient;
+
+            SetupSink(bufferingInterval, bufferingCount, maxBufferSize, onCompletedTimeout, partitionKey);
+        }
+
+        private void SetupSink(TimeSpan bufferingInterval, int bufferingCount, int maxBufferSize, TimeSpan onCompletedTimeout, string partitionKey)
+        {
             this.partitionKey = partitionKey;
             this.onCompletedTimeout = onCompletedTimeout;
-            
+
             string sinkId = string.Format(CultureInfo.InvariantCulture, "EventHubAmqpSink ({0})", Guid.NewGuid());
-            bufferedPublisher = BufferedEventPublisher<EventEntry>.CreateAndStart(sinkId, PublishEventsAsync, bufferingInterval, bufferingCount, maxBufferSize, cancellationTokenSource.Token);
+            bufferedPublisher = BufferedEventPublisher<EventEntry>.CreateAndStart(sinkId, PublishEventsAsync, bufferingInterval,
+                bufferingCount, maxBufferSize, cancellationTokenSource.Token);
         }
 
         public void OnNext(EventEntry value)
