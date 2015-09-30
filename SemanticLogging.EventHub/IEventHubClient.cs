@@ -4,7 +4,7 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace SemanticLogging.EventHub
 {
-    public interface IEventHubClient
+    internal interface IEventHubClient
     {
         Task SendBatchAsync(IEnumerable<EventData> eventDataList);
     }

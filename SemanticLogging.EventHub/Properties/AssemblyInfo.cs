@@ -23,6 +23,7 @@ using System.Runtime.InteropServices;
 [assembly: Guid("dc78157f-644d-4f9b-ad6f-2cc4158f03d6")]
 
 [assembly: InternalsVisibleTo("SemanticLogging.EventHub.Tests")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 
 // Version information for an assembly consists of the following four values:
 //

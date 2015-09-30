@@ -4,7 +4,7 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace SemanticLogging.EventHub
 {
-    public class EventHubClientImp : IEventHubClient
+    internal class EventHubClientImp : IEventHubClient
     {
         private readonly EventHubClient client;
 

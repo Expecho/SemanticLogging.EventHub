@@ -21,7 +21,7 @@ namespace SemanticLogging.EventHub
         private readonly string eventHubNamespace;
         private readonly string eventHubName;
         private readonly string publisherId;
-        private readonly HttpClient httpClient = new HttpClient();
+        private readonly IHttpClient httpClient;
         private readonly BufferedEventPublisher<EventEntry> bufferedPublisher;
         private readonly TimeSpan onCompletedTimeout;
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -40,7 +40,13 @@ namespace SemanticLogging.EventHub
         /// This means that if the timeout period elapses, some event entries will be dropped and not sent to the store. Normally, calling <see cref="IDisposable.Dispose"/> on 
         /// the <see cref="System.Diagnostics.Tracing.EventListener"/> will block until all the entries are flushed or the interval elapses.
         /// If <see langword="null"/> is specified, then the call will block indefinitely until the flush operation finishes.</param>
-        public EventHubHttpSink(string eventHubNamespace, string eventHubName, string publisherId, string sasToken, TimeSpan bufferingInterval, int bufferingCount, int maxBufferSize, TimeSpan onCompletedTimeout)
+        public EventHubHttpSink(string eventHubNamespace, string eventHubName, string publisherId, string sasToken, TimeSpan bufferingInterval, int bufferingCount, int maxBufferSize, TimeSpan onCompletedTimeout) : 
+            this(new HttpClientImp(), eventHubNamespace, eventHubName, publisherId, sasToken, bufferingInterval, bufferingCount, maxBufferSize, onCompletedTimeout)
+        {
+            
+        }
+
+        internal EventHubHttpSink(IHttpClient httpClient, string eventHubNamespace, string eventHubName, string publisherId, string sasToken, TimeSpan bufferingInterval, int bufferingCount, int maxBufferSize, TimeSpan onCompletedTimeout)
         {
             Guard.ArgumentNotNullOrEmpty(eventHubNamespace, "eventHubConnectionString");
             Guard.ArgumentNotNullOrEmpty(eventHubName, "eventHubName");
@@ -55,6 +61,7 @@ namespace SemanticLogging.EventHub
             string sinkId = string.Format(CultureInfo.InvariantCulture, "EventHubHttpSink ({0})", Guid.NewGuid());
             bufferedPublisher = BufferedEventPublisher<EventEntry>.CreateAndStart(sinkId, PublishEventsAsync, bufferingInterval, bufferingCount, maxBufferSize, cancellationTokenSource.Token);
 
+            this.httpClient = httpClient;
             httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", sasToken);
         }
 
@@ -133,8 +140,7 @@ namespace SemanticLogging.EventHub
                                 {
                                     Body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messages))
                                 };
-
-
+            
             HttpContent postContent = new ByteArrayContent(sendMessage.Body);
             postContent.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.microsoft.servicebus.json");
 

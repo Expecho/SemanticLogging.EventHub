@@ -1,10 +1,6 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. 
-
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Schema;
-using Microsoft.ServiceBus.Messaging;
 using Newtonsoft.Json;
 
 namespace SemanticLogging.EventHub.Utility

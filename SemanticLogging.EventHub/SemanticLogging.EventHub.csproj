@@ -68,7 +68,9 @@
     <Compile Include="EventHubClientImp.cs" />
     <Compile Include="EventHubHttpLog.cs" />
     <Compile Include="EventHubHttpSink.cs" />
+    <Compile Include="HttpClientImp.cs" />
     <Compile Include="IEventHubClient.cs" />
+    <Compile Include="IHttpClient.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
