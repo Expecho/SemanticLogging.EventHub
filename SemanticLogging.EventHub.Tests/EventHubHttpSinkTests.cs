@@ -126,6 +126,26 @@ namespace SemanticLogging.EventHub.Tests
         }
 
         [TestMethod]
+        public async Task ShouldNotUseBatchMessagesWhenBatchCountSetToOne()
+        {
+            var httpClient = HttpClientTestHelper.Create();
+            httpClient.PostAsync(Arg.Any<string>(), Arg.Any<HttpContent>()).Returns(Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)));
+
+            var entry = EventEntryTestHelper.Create();
+
+            using (var sink = new EventHubHttpSink(httpClient, "eventHubNameNs", "eventhubName", "pubId", "token", Buffering.DefaultBufferingInterval, 1, 500, TimeSpan.Zero))
+            {
+                sink.OnNext(entry);
+                sink.OnNext(entry);
+
+                await sink.FlushAsync();
+            }
+
+            var byteRepresentation = Encoding.Default.GetBytes(JsonConvert.SerializeObject(entry));
+            await httpClient.Received(2).PostAsync(Arg.Any<string>(), Arg.Is<HttpContent>(c => byteRepresentation.SequenceEqual(c.ReadAsByteArrayAsync().Result)));
+        }
+
+        [TestMethod]
         public async Task ShouldWritePropertiesForBatchMessage()
         {
             var httpClient = HttpClientTestHelper.Create();
