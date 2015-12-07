@@ -11,6 +11,7 @@ namespace SemanticLogging.EventHub
         /// <summary>
         /// Subscribes to an <see cref="IObservable{EventEntry}" /> using an <see cref="EventHubHttpSink" />.
         /// </summary>
+        /// <param name="eventStream">The event stream. Typically this is an instance of <see cref="ObservableEventListener" />.</param>
         /// <param name="eventHubNamespace">The namespace of the eventhub.</param>
         /// <param name="eventHubName">The name of the eventhub.</param>
         /// <param name="publisherId">The id fo the event pbulisher.</param>

@@ -16,8 +16,7 @@ namespace SemanticLogging.EventHub
         /// </summary>
         /// <param name="eventStream">The event stream. Typically this is an instance of <see cref="ObservableEventListener" />.</param>
         /// <param name="eventHubConnectionString">The connection string for the eventhub.</param>
-        /// <param name="eventHubPath">The name of the eventhub.</param>
-        /// <param name="eventHubName"></param>
+        /// <param name="eventHubName">The name of the eventhub.</param>
         /// <param name="bufferingInterval">The buffering interval between each batch publishing. Default value is <see cref="Buffering.DefaultBufferingInterval" />.</param>
         /// <param name="bufferingCount">The number of entries that will trigger a batch publishing.</param>
         /// <param name="onCompletedTimeout">Defines a timeout interval for when flushing the entries after an <see cref="EventHubAmqpSink.OnCompleted" /> call is received and before disposing the sink.</param>
