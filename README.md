@@ -79,7 +79,7 @@ You can use this tool to generate a sas token: https://github.com/sandrinodimatt
 
 ## Buffering and batch size
 
-Both sinks support buffering of events before publishing to the event hub. It is important to note that a single batch must not exceed the 256 KB limit of an event. Additionally, each message in the batch uses the same publisher identity. It is the responsibility of the sender to ensure that the batch does not exceed the maximum event size. The buffersize can be set using the bufferingCount variable. Set the bufferingCount to 1 to disable the buffering.
+Both sinks support buffering of events before publishing to the event hub. It is important to note that a single batch must not exceed the 256 KB limit of an event. Additionally, each message in the batch uses the same publisher identity. It is the responsibility of the sender to ensure that the batch does not exceed the maximum event size. The number of events that trigger a publish can be set using the bufferingCount variable. Set the bufferingCount to 1 to disable buffering.
 
 ## Consuming events
 
