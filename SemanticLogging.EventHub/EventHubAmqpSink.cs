@@ -21,6 +21,7 @@ namespace SemanticLogging.EventHub
         private BufferedEventPublisher<EventEntry> bufferedPublisher;
         private TimeSpan onCompletedTimeout;
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private bool useAutomaticSizedBuffer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventHubAmqpSink" /> class.
@@ -56,6 +57,8 @@ namespace SemanticLogging.EventHub
 
         private void SetupSink(TimeSpan bufferingInterval, int bufferingCount, int maxBufferSize, TimeSpan onCompletedTimeout, string partitionKey)
         {
+            useAutomaticSizedBuffer = bufferingCount == 0;
+
             this.partitionKey = partitionKey;
             this.onCompletedTimeout = onCompletedTimeout;
 
@@ -123,19 +126,14 @@ namespace SemanticLogging.EventHub
 
         private async Task<int> PublishEventsAsync(IList<EventEntry> collection)
         {
-            var publishedEventCount = collection.Count;
-
             try
             {
-                var events = collection.Select(entry => 
-                    new EventData(Encoding.Default.GetBytes(JsonConvert.SerializeObject(entry)))
+                if (useAutomaticSizedBuffer)
                 {
-                    PartitionKey = partitionKey
-                });
+                    return await SendAutoSizedBatchAsync(collection);
+                }
 
-                await eventHubClient.SendBatchAsync(events);
-
-                return publishedEventCount;
+                return await SendManualSizedBatchAsync(collection);
             }
             catch (OperationCanceledException)
             {
@@ -151,6 +149,45 @@ namespace SemanticLogging.EventHub
                 SemanticLoggingEventSource.Log.CustomSinkUnhandledFault(ex.ToString());
                 throw;
             }
+        }
+
+        private async Task<int> SendManualSizedBatchAsync(ICollection<EventEntry> collection)
+        {
+            var events = collection.Select(entry =>
+                        new EventData(Encoding.Default.GetBytes(JsonConvert.SerializeObject(entry)))
+                        {
+                            PartitionKey = partitionKey
+                        });
+
+            await eventHubClient.SendBatchAsync(events);
+
+            return collection.Count;
+        }
+
+        private async Task<int> SendAutoSizedBatchAsync(IEnumerable<EventEntry> collection)
+        {
+            var events = new List<EventData>();
+            long totalSerializedSizeInBytes = 0;
+            const long maxMessageSizeInBytes = 250000;
+
+            foreach (var eventData in collection.Select(eventEntry => new EventData(Encoding.Default.GetBytes(JsonConvert.SerializeObject(eventEntry)))
+            {
+                PartitionKey = partitionKey
+            }))
+            {
+                totalSerializedSizeInBytes += eventData.SerializedSizeInBytes;
+
+                if (totalSerializedSizeInBytes > maxMessageSizeInBytes)
+                {
+                    break;
+                }
+
+                events.Add(eventData);
+            }
+
+            await eventHubClient.SendBatchAsync(events);
+
+            return events.Count;
         }
 
         private void FlushSafe()

@@ -11,6 +11,7 @@ using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility;
 using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
+using Microsoft.ServiceBus.Messaging;
 using Newtonsoft.Json;
 using SemanticLogging.EventHub.Utility;
 
@@ -25,13 +26,14 @@ namespace SemanticLogging.EventHub
         private readonly BufferedEventPublisher<EventEntry> bufferedPublisher;
         private readonly TimeSpan onCompletedTimeout;
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private bool useAutomaticSizedBuffer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventHubHttpSink" /> class.
         /// </summary>
         /// <param name="eventHubNamespace">The namespace of the eventhub.</param>
         /// <param name="eventHubName">The name of the eventhub.</param>
-        /// <param name="publisherId">The id fo the event pbulisher.</param>
+        /// <param name="publisherId">The id of the event publisher.</param>
         /// <param name="sasToken">The shared access signature token.</param>
         /// <param name="bufferingInterval">The buffering interval between each batch publishing.</param>
         /// <param name="bufferingCount">The number of entries that will trigger a batch publishing.</param>
@@ -53,6 +55,7 @@ namespace SemanticLogging.EventHub
             Guard.ArgumentNotNullOrEmpty(publisherId, "partitionKey");
             Guard.ArgumentNotNullOrEmpty(sasToken, "sasToken");
 
+            useAutomaticSizedBuffer = bufferingCount == 0;
             this.eventHubNamespace = eventHubNamespace;
             this.eventHubName = eventHubName;
             this.publisherId = publisherId;
@@ -90,7 +93,7 @@ namespace SemanticLogging.EventHub
             {
                 var content = collection.Count == 1 ? 
                     CreateSingleMessageContent(collection.First()) : 
-                    CreateBatchMessageContent(collection);
+                    CreateBatchMessageContent(collection, out publishedEventCount);
 
                 var retryStrategy = new Incremental(5, TimeSpan.FromSeconds(0.5), TimeSpan.FromSeconds(1));
                 var retryPolicy = new RetryPolicy<HttpTransientErrorDetectionStrategy>(retryStrategy);
@@ -132,17 +135,59 @@ namespace SemanticLogging.EventHub
             }
         }
 
-        private HttpContent CreateBatchMessageContent(IList<EventEntry> collection)
+        private HttpContent CreateBatchMessageContent(IList<EventEntry> collection, out int publishedEventCount)
+        {
+            if (useAutomaticSizedBuffer)
+                return CreateAutoSizedBatch(collection, out publishedEventCount);
+
+            return CreateManualSizedBatch(collection, out publishedEventCount);
+        }
+
+        private HttpContent CreateManualSizedBatch(ICollection<EventEntry> collection, out int publishedEventCount)
         {
             var messages = collection.Select(c => c.ToBatchMessage());
 
             var sendMessage = new ServiceBusHttpMessage
-                                {
-                                    Body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messages))
-                                };
-            
+            {
+                Body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messages))
+            };
+
             HttpContent postContent = new ByteArrayContent(sendMessage.Body);
             postContent.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.microsoft.servicebus.json");
+
+            publishedEventCount = collection.Count;
+
+            return postContent;
+        }
+
+        private HttpContent CreateAutoSizedBatch(IEnumerable<EventEntry> collection, out int publishedEventCount)
+        {
+            long totalSerializedSizeInBytes = 0;
+            const long maxMessageSizeInBytes = 250000;
+
+            var messages = new List<BatchMessage>();
+            foreach (var eventEntry in collection)
+            {
+                var batchMessage = eventEntry.ToBatchMessage();
+                totalSerializedSizeInBytes += Encoding.UTF8.GetBytes(batchMessage.Body).Length;
+
+                if (totalSerializedSizeInBytes > maxMessageSizeInBytes)
+                {
+                    break;
+                }
+
+                messages.Add(batchMessage);
+            }
+
+            var sendMessage = new ServiceBusHttpMessage
+            {
+                Body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messages))
+            };
+
+            HttpContent postContent = new ByteArrayContent(sendMessage.Body);
+            postContent.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.microsoft.servicebus.json");
+
+            publishedEventCount = messages.Count;
 
             return postContent;
         }

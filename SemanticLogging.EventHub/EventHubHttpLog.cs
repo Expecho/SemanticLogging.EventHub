@@ -14,7 +14,7 @@ namespace SemanticLogging.EventHub
         /// <param name="eventStream">The event stream. Typically this is an instance of <see cref="ObservableEventListener" />.</param>
         /// <param name="eventHubNamespace">The namespace of the eventhub.</param>
         /// <param name="eventHubName">The name of the eventhub.</param>
-        /// <param name="publisherId">The id fo the event pbulisher.</param>
+        /// <param name="publisherId">The id of the event publisher.</param>
         /// <param name="sasToken">The shared access signature token.</param>
         /// <param name="bufferingInterval">The buffering interval between each batch publishing.</param>
         /// <param name="bufferingCount">The number of entries that will trigger a batch publishing.</param>
@@ -49,7 +49,7 @@ namespace SemanticLogging.EventHub
         /// </summary>
         /// <param name="eventHubNamespace">The namespace of the eventhub.</param>
         /// <param name="eventHubName">The name of the eventhub.</param>
-        /// <param name="publisherId">The id fo the event pbulisher.</param>
+        /// <param name="publisherId">The id of the event publisher.</param>
         /// <param name="sasToken">The shared access signature token.</param>
         /// <param name="bufferingInterval">The buffering interval between each batch publishing.</param>
         /// <param name="bufferingCount">The number of entries that will trigger a batch publishing.</param>
