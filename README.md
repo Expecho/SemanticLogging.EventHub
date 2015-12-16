@@ -83,7 +83,15 @@ Both sinks support buffering of events before publishing to the event hub. It is
 
 ### Autosized buffering
 
-Currently there is a limit on the maximum size of a message, or a batch of messages, of 256 KB for the Azure Service Bus. There is build in support for using an autosized buffer mechanism. Events are buffered until the limit is reached and then send to the Event Hub. Any leftover event will be submitted in a new batch. To enbale autosized buffering set the bufferingCount to 0.
+Currently there is a limit on the maximum size of a message, or a batch of messages, of 256 KB for the Azure Service Bus. There is build in support for using an autosized buffer mechanism. Events are buffered until the limit is reached and then send to the Event Hub. Any leftover event will be submitted in a new batch. To enabel autosized buffering set the bufferingCount to 0.
+
+```c#
+listener.LogToEventHubUsingAmqp(
+    "Endpoint=sb://my-eventhub-ns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=[your key]",
+    "my-eventhub",
+    bufferingCount: 0
+  );
+```
 
 ## Consuming events
 
