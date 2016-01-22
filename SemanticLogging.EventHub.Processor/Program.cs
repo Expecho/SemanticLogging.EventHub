@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
 
 namespace SemanticLogging.EventHub.SampleProcessor
@@ -8,15 +7,21 @@ namespace SemanticLogging.EventHub.SampleProcessor
     {
         static void Main(string[] args)
         {
-            ProcessAsync().Wait();
+            var host = CreateEventProcessorHost();
+            host.RegisterEventProcessorAsync<SampleEventProcessor>().Wait();
+
+            Console.WriteLine("Press any key to stop processing...");
+            Console.ReadKey();
+
+            host.UnregisterEventProcessorAsync().Wait();
         }
 
-        public static async Task ProcessAsync()
+        public static EventProcessorHost CreateEventProcessorHost()
         {
             const string eventHubConnectionString = "<eventhub connection string>";
             var eventHubClient = EventHubClient.CreateFromConnectionString(eventHubConnectionString, "<eventhub name>");
 
-            var eventProcessorHost = new EventProcessorHost(Environment.MachineName,
+            var eventProcessorHost = new EventProcessorHost(Guid.NewGuid().ToString(),
                                                             eventHubClient.Path.ToLower(),
                                                             EventHubConsumerGroup.DefaultGroupName,
                                                             eventHubConnectionString,
@@ -30,7 +35,7 @@ namespace SemanticLogging.EventHub.SampleProcessor
                 }
             };
 
-            await eventProcessorHost.RegisterEventProcessorAsync<SampleEventProcessor>();
+            return eventProcessorHost;
         }
     }
 
