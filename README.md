@@ -81,6 +81,18 @@ You can use this tool to generate a sas token: https://github.com/sandrinodimatt
 
 Both sinks support buffering of events before publishing to the event hub. It is important to note that a single batch must not exceed the 256 KB limit of an event. Additionally, each message in the batch uses the same publisher identity. It is the responsibility of the sender to ensure that the batch does not exceed the maximum event size. The number of events that trigger a publish can be set using the bufferingCount variable. Set the bufferingCount to 1 to disable buffering.
 
+### Autosized buffering
+
+Currently there is a limit on the maximum size of a message, or a batch of messages, of 256 KB for the Azure Service Bus. There is build in support for using an autosized buffer mechanism. Events are buffered until the limit is reached and then send to the Event Hub. Any leftover event will be submitted in a new batch. To enable autosized buffering set the bufferingCount to 0. Both the amqp and the https based sink support this feature.
+
+```c#
+listener.LogToEventHubUsingAmqp(
+    "Endpoint=sb://my-eventhub-ns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=[your key]",
+    "my-eventhub",
+    bufferingCount: 0
+  );
+```
+
 ## Consuming events
 
 One possibility is to create your own EventProcessor, a simplified implementation could like like this:
