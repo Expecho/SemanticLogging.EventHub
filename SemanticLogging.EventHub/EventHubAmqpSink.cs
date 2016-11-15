@@ -22,6 +22,7 @@ namespace SemanticLogging.EventHub
         private TimeSpan onCompletedTimeout;
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private bool useAutomaticSizedBuffer;
+        private string sinkId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventHubAmqpSink" /> class.
@@ -62,7 +63,7 @@ namespace SemanticLogging.EventHub
             this.partitionKey = partitionKey;
             this.onCompletedTimeout = onCompletedTimeout;
 
-            string sinkId = string.Format(CultureInfo.InvariantCulture, "EventHubAmqpSink ({0})", Guid.NewGuid());
+            sinkId = string.Format(CultureInfo.InvariantCulture, "EventHubAmqpSink ({0})", Guid.NewGuid());
             bufferedPublisher = BufferedEventPublisher<EventEntry>.CreateAndStart(sinkId, PublishEventsAsync, bufferingInterval,
                 bufferingCount, maxBufferSize, cancellationTokenSource.Token);
         }
@@ -146,7 +147,7 @@ namespace SemanticLogging.EventHub
                     return 0;
                 }
 
-                SemanticLoggingEventSource.Log.CustomSinkUnhandledFault(ex.ToString());
+                LogSinkFaultMessage(ex.ToString());
                 throw;
             }
         }
@@ -188,6 +189,12 @@ namespace SemanticLogging.EventHub
             await eventHubClient.SendBatchAsync(events);
 
             return events.Count;
+        }
+
+        private void LogSinkFaultMessage(string message)
+        {
+            var logMessage = string.Format("Error in sink {0}: {1}", sinkId, message);
+            SemanticLoggingEventSource.Log.CustomSinkUnhandledFault(logMessage);
         }
 
         private void FlushSafe()

@@ -11,7 +11,6 @@ using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility;
 using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
-using Microsoft.ServiceBus.Messaging;
 using Newtonsoft.Json;
 using SemanticLogging.EventHub.Utility;
 
@@ -26,7 +25,8 @@ namespace SemanticLogging.EventHub
         private readonly BufferedEventPublisher<EventEntry> bufferedPublisher;
         private readonly TimeSpan onCompletedTimeout;
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        private bool useAutomaticSizedBuffer;
+        private readonly bool useAutomaticSizedBuffer;
+        private readonly string sinkId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventHubHttpSink" /> class.
@@ -61,7 +61,7 @@ namespace SemanticLogging.EventHub
             this.publisherId = publisherId;
             this.onCompletedTimeout = onCompletedTimeout;
 
-            string sinkId = string.Format(CultureInfo.InvariantCulture, "EventHubHttpSink ({0})", Guid.NewGuid());
+            sinkId = string.Format(CultureInfo.InvariantCulture, "EventHubHttpSink ({0})", Guid.NewGuid());
             bufferedPublisher = BufferedEventPublisher<EventEntry>.CreateAndStart(sinkId, PublishEventsAsync, bufferingInterval, bufferingCount, maxBufferSize, cancellationTokenSource.Token);
 
             this.httpClient = httpClient;
@@ -112,7 +112,7 @@ namespace SemanticLogging.EventHub
                     return 0;
                 }
 
-                SemanticLoggingEventSource.Log.CustomSinkUnhandledFault(ex.ToString());
+                LogSinkFaultMessage(ex.ToString());
                 throw;
             }
         }
@@ -125,12 +125,12 @@ namespace SemanticLogging.EventHub
             {
                 var response = await httpClient.PostAsync(url, content);
                 if (!response.IsSuccessStatusCode)
-                    SemanticLoggingEventSource.Log.CustomSinkUnhandledFault(string.Format("The request failed with statuscode {0}: {1}", (int)response.StatusCode, response.ReasonPhrase));
+                    LogSinkFaultMessage(string.Format("The request failed with statuscode {0}: {1}", (int)response.StatusCode, response.ReasonPhrase));
 
             }
             catch (Exception ex)
             {
-                SemanticLoggingEventSource.Log.CustomSinkUnhandledFault(ex.ToString());
+                LogSinkFaultMessage(ex.ToString());
                 throw;
             }
         }
@@ -200,6 +200,12 @@ namespace SemanticLogging.EventHub
             content.Headers.Add("ContentType", "application/atom+xml;type=entry;charset=utf-8");
 
             return content;
+        }
+
+        private void LogSinkFaultMessage(string message)
+        {
+            var logMessage = string.Format("Error in sink {0}: {1}", sinkId, message);
+            SemanticLoggingEventSource.Log.CustomSinkUnhandledFault(logMessage);
         }
 
         private void FlushSafe()
