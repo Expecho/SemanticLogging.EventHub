@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
@@ -15,12 +17,14 @@ namespace SemanticLogging.EventHub.SampleProcessor
 
         public async Task ProcessEventsAsync(PartitionContext context, IEnumerable<EventData> events)
         {
-            foreach (var eventData in events)
+            var eventEntries = events
+                    .Select(b => ToEventEntry(Encoding.Default.GetString(b.GetBytes())));
+
+            foreach (var eventEntry in eventEntries)
             {
-                dynamic data = JsonConvert.DeserializeObject(Encoding.Default.GetString(eventData.GetBytes()));
-                // process data
+                // Process eventEntry
             }
-            
+
             await context.CheckpointAsync();
         }
 
@@ -30,6 +34,19 @@ namespace SemanticLogging.EventHub.SampleProcessor
             {
                 await context.CheckpointAsync();
             }
+        }
+
+        private static EventEntry ToEventEntry(string json)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<EventEntry>(json);
+            }
+            catch (Exception)
+            {
+                return new EventEntry();
+            }
+
         }
     }
 }
