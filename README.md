@@ -1,5 +1,5 @@
 ## SemanticLogging.EventHub
-The SemanticLogging.EventHub project provides sinks for the Semantic Logging Application Block that exposes Event Source events to an Azure Event Hub. There is an HTTPS based sink and an AMQP based sink.
+The SemanticLogging.EventHub project provides sinks for the [Semantic Logging Application Block](https://msdn.microsoft.com/en-us/library/dn775014(v=pandp.20).aspx) that exposes Event Source events to an Azure Event Hub. There is an HTTPS based sink and an AMQP based sink.
 
 These sinks are also available as a Nuget package: https://www.nuget.org/packages/SemanticLogging.EventHub/ 
 
