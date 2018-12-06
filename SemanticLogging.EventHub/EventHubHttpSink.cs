@@ -164,12 +164,11 @@ namespace SemanticLogging.EventHub
         {
             long totalSerializedSizeInBytes = 0;
             const long maxMessageSizeInBytes = 250000;
-
             var messages = new List<BatchMessage>();
             foreach (var eventEntry in collection)
             {
                 var batchMessage = eventEntry.ToBatchMessage();
-                totalSerializedSizeInBytes += Encoding.UTF8.GetBytes(batchMessage.Body).Length;
+                totalSerializedSizeInBytes += JsonConvert.SerializeObject(batchMessage.Body).Length;
 
                 if (totalSerializedSizeInBytes > maxMessageSizeInBytes)
                 {
