@@ -172,6 +172,26 @@ namespace SemanticLogging.EventHub.Tests
 
             await httpClient.Received().PostAsync(Arg.Any<string>(), Arg.Is<HttpContent>(c => byteRepresentation.SequenceEqual(c.ReadAsByteArrayAsync().Result)));
         }
+        
+        [TestMethod]
+        public async Task ShouldWritePropertiesForBatchMessageUsingAutoSizedBatch()
+        {
+            var httpClient = HttpClientTestHelper.Create();
+            httpClient.PostAsync(Arg.Any<string>(), Arg.Any<HttpContent>()).Returns(Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)));
+
+            var entry = EventEntryTestHelper.Create();
+
+            using (var sink = new EventHubHttpSink(httpClient, "eventHubNameNs", "eventhubName", "pubId", "token", Buffering.DefaultBufferingInterval, 0, Buffering.DefaultMaxBufferSize, TimeSpan.Zero))
+            {
+                foreach (var i in Enumerable.Range(0, 500))
+                {
+                    sink.OnNext(entry);
+                }
+                await sink.FlushAsync();
+            }
+
+            await httpClient.Received(2).PostAsync(Arg.Any<string>(), Arg.Is<HttpContent>(c => c.Headers.ContentLength < 256 * 1024 ));
+        }
 
         [TestMethod]
         public void ShouldAddSasTokenToHeaders()
